@@ -27,7 +27,7 @@ class AuthService implements AuthServiceInterface
         $data['password'] = bcrypt($data['password']);
         $user = User::create($data);
         $success['token'] = $user->createToken('APP')->plainTextToken;
-        $success['name'] = $user->name;
+        $success['user'] = $user->only('id', 'name', 'email');
 
         return $success;
     }
@@ -37,7 +37,7 @@ class AuthService implements AuthServiceInterface
         if (Auth::attempt(['email' => $data['email'], 'password' => $data['password']])) {
             $user = Auth::user();
             $success['token'] = $user->createToken('APP')->plainTextToken;
-            $success['name'] = $user->name;
+            $success['user'] = $user->only('id', 'name', 'email');
 
             return $success;
         }
