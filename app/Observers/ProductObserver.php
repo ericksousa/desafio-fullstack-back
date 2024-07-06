@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Product;
 use Illuminate\Support\Facades\Cache;
+use App\Enums\CacheKeyEnum;
 
 class ProductObserver
 {
@@ -12,7 +13,7 @@ class ProductObserver
      */
     public function created(Product $product): void
     {
-        Cache::forget('products');
+        Cache::forget(CacheKeyEnum::Products->value);
     }
 
     /**

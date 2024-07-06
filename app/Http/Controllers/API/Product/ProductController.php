@@ -9,6 +9,7 @@ use Validator;
 use App\Http\Resources\ProductResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
+use App\Enums\CacheKeyEnum;
 
 class ProductController extends BaseController
 {
@@ -19,7 +20,7 @@ class ProductController extends BaseController
      */
     public function index(): JsonResponse
     {
-        $products = Cache::rememberForever('products', function () {
+        $products = Cache::rememberForever(CacheKeyEnum::Products->value, function () {
             return Product::with('category')->get();
         });
 
