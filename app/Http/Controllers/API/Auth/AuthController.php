@@ -4,13 +4,20 @@ namespace App\Http\Controllers\API\Auth;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Validator;
 use Illuminate\Http\JsonResponse;
+use App\Services\Auth\AuthServiceInterface;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\AuthenticationException;
 
 class AuthController extends BaseController
 {
+    protected $authService;
+
+    public function __construct(AuthServiceInterface $authService)
+    {
+        $this->authService = $authService;
+    }
+
     /**
      * Register api
      *
@@ -18,23 +25,12 @@ class AuthController extends BaseController
      */
     public function register(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('VALIDATION_ERROR', $validator->errors());
+        try {
+            $success = $this->authService->register($request->all());
+            return $this->sendResponse($success, 'Usuário registrado com sucesso');
+        } catch (ValidationException $e) {
+            return $this->sendError('VALIDATION_ERROR', $e->errors());
         }
-
-        $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
-        $success['token'] =  $user->createToken('APP')->plainTextToken;
-        $success['name'] =  $user->name;
-
-        return $this->sendResponse($success, 'Usuário registrado com sucesso');
     }
 
     /**
@@ -44,14 +40,11 @@ class AuthController extends BaseController
      */
     public function login(Request $request): JsonResponse
     {
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $user = Auth::user();
-            $success['token'] =  $user->createToken('APP')->plainTextToken;
-            $success['name'] =  $user->name;
-
+        try {
+            $success = $this->authService->login($request->all());
             return $this->sendResponse($success, 'Login efetuado com sucesso');
+        } catch (AuthenticationException $e) {
+            return $this->sendError('UNAUTHORISED', ['error' => $e->getMessage()]);
         }
-
-        return $this->sendError('UNAUTHORISED', ['error' => 'Unauthorised']);
     }
 }
