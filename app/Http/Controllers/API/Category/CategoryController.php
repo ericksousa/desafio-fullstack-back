@@ -38,7 +38,7 @@ class CategoryController extends BaseController
         ]);
 
         if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors());
+            return $this->sendError('VALIDATION_ERROR', $validator->errors());
         }
 
         $category = Category::create($payload);
