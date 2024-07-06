@@ -22,4 +22,27 @@ class CategoryController extends BaseController
 
         return $this->sendResponse(CategoryResource::collection($categories), 'Busca realizada com sucesso');
     }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $payload = $request->all();
+
+        $validator = Validator::make($payload, [
+            'name' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        $category = Category::create($payload);
+
+        return $this->sendResponse(new CategoryResource($category), 'Categoria cadastrada com sucesso');
+    }
 }
