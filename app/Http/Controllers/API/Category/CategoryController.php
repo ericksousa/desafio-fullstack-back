@@ -34,7 +34,7 @@ class CategoryController extends BaseController
         $payload = $request->all();
 
         $validator = Validator::make($payload, [
-            'name' => 'required',
+            'name' => 'required|unique:categories',
         ]);
 
         if ($validator->fails()) {
