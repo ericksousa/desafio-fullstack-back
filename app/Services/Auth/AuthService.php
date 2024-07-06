@@ -26,22 +26,26 @@ class AuthService implements AuthServiceInterface
 
         $data['password'] = bcrypt($data['password']);
         $user = User::create($data);
-        $success['token'] = $user->createToken('APP')->plainTextToken;
-        $success['user'] = $user->only('id', 'name', 'email');
 
-        return $success;
+        return $this->makeResponse($user);
     }
 
     public function login(array $data)
     {
         if (Auth::attempt(['email' => $data['email'], 'password' => $data['password']])) {
             $user = Auth::user();
-            $success['token'] = $user->createToken('APP')->plainTextToken;
-            $success['user'] = $user->only('id', 'name', 'email');
 
-            return $success;
+            return $this->makeResponse($user);
         }
 
         throw new AuthenticationException('Unauthorised');
+    }
+
+    private function makeResponse(User $user): array
+    {
+        return [
+            'token' => $user->createToken('APP')->plainTextToken,
+            'user' => $user->only('id', 'name', 'email'),
+        ];
     }
 }
