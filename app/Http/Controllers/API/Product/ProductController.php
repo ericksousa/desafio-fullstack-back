@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\API\Category;
+namespace App\Http\Controllers\API\Product;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
-use App\Models\Category;
+use App\Models\Product;
 use Validator;
-use App\Http\Resources\CategoryResource;
+use App\Http\Resources\ProductResource;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
-class CategoryController extends BaseController
+class ProductController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -18,9 +19,11 @@ class CategoryController extends BaseController
      */
     public function index(): JsonResponse
     {
-        $categories = Category::all();
+        $products = Cache::rememberForever('products', function () {
+            return Product::with('category')->get();
+        });
 
-        return $this->sendResponse(CategoryResource::collection($categories), 'Busca realizada com sucesso');
+        return $this->sendResponse(ProductResource::collection($products), 'Busca realizada com sucesso');
     }
 
     /**
@@ -34,15 +37,17 @@ class CategoryController extends BaseController
         $payload = $request->all();
 
         $validator = Validator::make($payload, [
-            'name' => 'required|unique:categories',
+            'name' => 'required|unique:products',
+            'price' => 'required',
+            'category_id' => 'required|exists:App\Models\Category,id',
         ]);
 
         if ($validator->fails()) {
             return $this->sendError('VALIDATION_ERROR', $validator->errors());
         }
 
-        $category = Category::create($payload);
+        $product = Product::create($payload);
 
-        return $this->sendResponse(new CategoryResource($category), 'Categoria cadastrada com sucesso');
+        return $this->sendResponse(new ProductResource($product), 'Produto cadastrado com sucesso');
     }
 }
