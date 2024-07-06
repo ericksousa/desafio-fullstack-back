@@ -20,13 +20,12 @@ class AuthController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'confirmation_password' => 'required|same:password',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|confirmed',
         ]);
 
         if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors());
+            return $this->sendError('VALIDATION_ERROR', $validator->errors());
         }
 
         $input = $request->all();
@@ -53,6 +52,6 @@ class AuthController extends BaseController
             return $this->sendResponse($success, 'Login efetuado com sucesso');
         }
 
-        return $this->sendError('Unauthorised.', ['error' => 'Unauthorised']);
+        return $this->sendError('UNAUTHORISED', ['error' => 'Unauthorised']);
     }
 }
