@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\Auth;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\API\BaseController as BaseController;
+use App\Http\Controllers\API\BaseController;
 use App\Services\Auth\AuthServiceInterface;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;

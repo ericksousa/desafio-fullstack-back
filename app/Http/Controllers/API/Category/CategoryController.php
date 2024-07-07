@@ -3,13 +3,20 @@
 namespace App\Http\Controllers\API\Category;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\API\BaseController as BaseController;
-use App\Models\Category;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\API\BaseController;
 use App\Http\Resources\CategoryResource;
+use App\Services\Category\CategoryServiceInterface;
+use Illuminate\Validation\ValidationException;
 
 class CategoryController extends BaseController
 {
+    protected $categoryService;
+
+    public function __construct(CategoryServiceInterface $categoryService)
+    {
+        $this->categoryService = $categoryService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +24,7 @@ class CategoryController extends BaseController
      */
     public function index()
     {
-        $categories = Category::all();
+        $categories = $this->categoryService->all();
 
         return $this->sendResponse(CategoryResource::collection($categories), 'Busca realizada com sucesso');
     }
@@ -30,18 +37,11 @@ class CategoryController extends BaseController
      */
     public function store(Request $request)
     {
-        $payload = $request->all();
-
-        $validator = Validator::make($payload, [
-            'name' => 'required|unique:categories',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('VALIDATION_ERROR', $validator->errors());
+        try {
+            $category = $this->categoryService->store($request->all());
+            return $this->sendResponse($category, 'Categoria cadastrada com sucesso');
+        } catch (ValidationException $e) {
+            return $this->sendError('VALIDATION_ERROR', $e->errors());
         }
-
-        $category = Category::create($payload);
-
-        return $this->sendResponse(new CategoryResource($category), 'Categoria cadastrada com sucesso');
     }
 }
