@@ -3,7 +3,6 @@
 namespace App\Services\Auth;
 
 use App\Models\User;
-use Illuminate\Support\ServiceProvider;
 use App\Services\Auth\AuthServiceInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
