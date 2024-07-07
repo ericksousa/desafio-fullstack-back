@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API\Auth;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
-use Illuminate\Http\JsonResponse;
 use App\Services\Auth\AuthServiceInterface;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
@@ -23,7 +22,7 @@ class AuthController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function register(Request $request): JsonResponse
+    public function register(Request $request)
     {
         try {
             $success = $this->authService->register($request->all());
@@ -38,7 +37,7 @@ class AuthController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function login(Request $request): JsonResponse
+    public function login(Request $request)
     {
         try {
             $success = $this->authService->login($request->all());

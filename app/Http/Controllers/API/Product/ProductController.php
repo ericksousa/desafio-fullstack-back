@@ -5,9 +5,8 @@ namespace App\Http\Controllers\API\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Product;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\ProductResource;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use App\Enums\CacheKeyEnum;
 
@@ -18,7 +17,7 @@ class ProductController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(): JsonResponse
+    public function index()
     {
         $products = Cache::rememberForever(CacheKeyEnum::Products->value, function () {
             return Product::with('category')->get();
@@ -33,7 +32,7 @@ class ProductController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         $payload = $request->all();
 

@@ -5,9 +5,8 @@ namespace App\Http\Controllers\API\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Category;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\CategoryResource;
-use Illuminate\Http\JsonResponse;
 
 class CategoryController extends BaseController
 {
@@ -16,7 +15,7 @@ class CategoryController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(): JsonResponse
+    public function index()
     {
         $categories = Category::all();
 
@@ -29,7 +28,7 @@ class CategoryController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         $payload = $request->all();
 
